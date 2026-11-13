@@ -25,6 +25,7 @@ La infraestructura está formada por:
 - Redes configuradas con las medidas de seguridad necesarias.
 
 ## Arquitectura de la infraestructura
+![Captura 1](img/Captura%20de%20pantalla%202026-11-12%20090453.png)
 
 
 ## Creación del repositorio GitHub
