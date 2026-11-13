@@ -25,10 +25,87 @@ La infraestructura está formada por:
 - Redes configuradas con las medidas de seguridad necesarias.
 
 ## Arquitectura de la infraestructura
-![Captura 1](img/Captura%20de%20pantalla%202026-11-12%20090453.png)
+
+Tengo 4 máquinas virtuales
+
+- MiriamPorroBalanceador
+- MiriamPorroWeb1
+- MiriamPorroWeb2
+- MiriamPorroBBDD
 
 
-## Creación del repositorio GitHub
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20102244.png)
+
+En las que a cada una le he puesto sus tarjetas de red correspondientes
+
+- Balanceador
+  
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20102918.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20102925.png)
 
 
-## Configuración de AWS
+- Web 1
+  
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20102945.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103000.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103013.png)
+
+- Web 2
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103038.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103052.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103104.png)
+
+- BBDD
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103121.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103129.png)
+
+## Configuración de red
+
+- Balanceador:
+
+Al arrancar la máquina "MiriamPorroBalanceador", se comprueban sus interfaces de red con el comando `ip -br a` 
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103129.png)
+
+- **`lo`**: interfaz de bucle local (*loopback*) con la dirección `127.0.0.1`. Es interna del sistema y no se modifica.
+
+
+- **`enp0s3`**: corresponde al **adaptador 1** de VirtualBox, configurado en modo puente. Tiene una dirección IP (`192.168.100.211`), por lo que ya tiene conectividad con la red local y con Internet.
+
+
+- **`enp0s8`**: corresponde al **adaptador 2**, conectado a la red interna red-web. Solo tiene una dirección IPv6 de enlace local (`fe80::...`) y no tiene dirección IPv4, ya que en una red interna de VirtualBox no existe ningún servidor DHCP. Por ello se le asignará una dirección IP estática.
+
+Luego le asigno el nombre de equipo y se configura la interfaz `enp0s8` con una IP fija mediante Netplan: `sudo hostnamectl set-hostname balanceador` y `sudo nano /etc/netplan/99-practica.yaml`
+
+Dentro del fichero he escrito:
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    enp0s3:
+      dhcp4: true
+    enp0s8:
+      dhcp4: false
+      addresses:
+        - 192.168.10.10/24
+```
+
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103129.png)
+
+Se aplica la configuración y se comprueba con:
+
+`sudo netplan apply`
+`ip -br a`
+`hostname`
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103129.png)
