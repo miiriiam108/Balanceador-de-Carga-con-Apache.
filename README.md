@@ -69,7 +69,7 @@ En las que a cada una le he puesto sus tarjetas de red correspondientes
 
 ## Configuración de red
 
-- **Balanceador:**
+1. **Balanceador:**
 
 Al arrancar la máquina "MiriamPorroBalanceador", se comprueban sus interfaces de red con el comando `ip -br a` 
 
@@ -104,9 +104,9 @@ network:
 
 Se aplica la configuración y se comprueba con:
 
-`sudo netplan apply`
-`ip -br a`
-`hostname`
+`sudo netplan apply` -> para ver si tenemos errores de sintaxis en el fichero
+`ip -br a` -> 
+`hostname` -> para ver el nombre de usuario
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20110641.png)
 
@@ -115,7 +115,7 @@ Se aplica la configuración y se comprueba con:
 - La interfaz `enp0s8` tiene la dirección estática **`192.168.10.10/24`**.
 
 
-- **Web1:**
+2. **Web1:**
 
 Ahora he arrancado la máquina "MiriamPorroWeb1" he vuelto a seguir los mismos pasos que en la máquina anterior. en este caso de nombre le he puesto "Web1" 
 
@@ -155,7 +155,7 @@ También he comprobado que desde Web1 hace ping a balanceador
 
 **ERROR** Al principio no me ha echo ping porque tenía la máquina MiriamPorroBalanceador apagada, una vez encendida si me ha echo ping 
 
-- **Web2:**
+3. **Web2:**
 
 Abro la segunda máquina "MiriamPorroWeb2" y realizo los mismos pasos esta vez con el nombre "Web2", y editando el fichero:
 
@@ -182,7 +182,18 @@ network:
 Como se puede observar también hace ping a internet y a la máquina del balanceador
 
 
+4. **BBDD**
 
+Abro la máquina "MiriamPorroBBDD" y realizo los mismos pasos, este 2 tarjetas como balanceador, no tres.
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20123043.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20123333.png)
+
+En este caso hago ping con internet, con Web1 y con Web 2
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20123705.png)
+
+Desde el balanceador le hago ping a la base de datos y como observamos no llega, porque el balanceador no está en red-bbdd
 
 
 
