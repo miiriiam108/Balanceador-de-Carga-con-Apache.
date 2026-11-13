@@ -109,3 +109,7 @@ Se aplica la configuración y se comprueba con:
 `hostname`
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20110641.png)
+
+- El nombre de equipo es **`balanceador`**.
+- La interfaz `enp0s3` (modo puente) mantiene su dirección por DHCP, `192.168.100.213`, y por tanto sale a Internet.
+- La interfaz `enp0s8` tiene la dirección estática **`192.168.10.10/24`**.
