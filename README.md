@@ -69,7 +69,7 @@ En las que a cada una le he puesto sus tarjetas de red correspondientes
 
 ## Configuración de red
 
-- Balanceador:
+- **Balanceador:**
 
 Al arrancar la máquina "MiriamPorroBalanceador", se comprueban sus interfaces de red con el comando `ip -br a` 
 
@@ -113,3 +113,114 @@ Se aplica la configuración y se comprueba con:
 - El nombre de equipo es **`balanceador`**.
 - La interfaz `enp0s3` (modo puente) mantiene su dirección por DHCP, `192.168.100.213`, y por tanto sale a Internet.
 - La interfaz `enp0s8` tiene la dirección estática **`192.168.10.10/24`**.
+
+
+- **Web1:**
+
+Ahora he arrancado la máquina "MiriamPorroWeb1" he vuelto a seguir los mismos pasos que en la máquina anterior. en este caso de nombre le he puesto "Web1" 
+
+`sudo hostnamectl set-hostname Web1`
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20110641.png)
+
+
+en el fichero he puesto: 
+```yaml
+network:
+  version: 2
+  ethernets:
+    enp0s3:
+      dhcp4: false
+      addresses:
+        - 192.168.10.11/24
+    enp0s8:
+      dhcp4: false
+      addresses:
+        - 192.168.20.11/24
+    enp0s9:
+      dhcp4: true
+```
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20110641.png)
+
+en este caso de nombre le he puesto "Web1" 
+
+`sudo hostnamectl set-hostname Web1`
+
+También he comprobado que desde Web1 hace ping a balanceador
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20110641.png)
+
+**ERROR** Al principio no me ha echo ping porque tenía la máquina MiriamPorroBalanceador apagada, una vez encendida si me ha echo ping 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
