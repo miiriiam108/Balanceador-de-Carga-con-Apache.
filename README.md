@@ -187,7 +187,10 @@ Como se puede observar también hace ping a internet y a la máquina del balance
 Abro la máquina "MiriamPorroBBDD" y realizo los mismos pasos, este 2 tarjetas como balanceador, no tres.
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20123043.png)
+
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20123333.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20123621.png)
 
 En este caso hago ping con internet, con Web1 y con Web 2
 
