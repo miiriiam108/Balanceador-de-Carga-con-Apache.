@@ -188,6 +188,20 @@ Abro la máquina "MiriamPorroBBDD" y realizo los mismos pasos, este 2 tarjetas c
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20123043.png)
 
+Contenido del fichero: 
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    enp0s3:
+      dhcp4: false
+      addresses:
+        - 192.168.20.10/24
+    enp0s8:
+      dhcp4: true
+```
+
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20123333.png)
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20123621.png)
@@ -198,6 +212,11 @@ En este caso hago ping con internet, con Web1 y con Web 2
 
 Desde el balanceador le hago ping a la base de datos y como observamos no llega, porque el balanceador no está en red-bbdd
 
+## Instalación de los servidores
+
+### Base de datos
+
+#### Instalación MariaDB y comprobación
 
 
 
