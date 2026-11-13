@@ -73,7 +73,7 @@ En las que a cada una le he puesto sus tarjetas de red correspondientes
 
 Al arrancar la máquina "MiriamPorroBalanceador", se comprueban sus interfaces de red con el comando `ip -br a` 
 
-![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103129.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20104238.png)
 
 - **`lo`**: interfaz de bucle local (*loopback*) con la dirección `127.0.0.1`. Es interna del sistema y no se modifica.
 
@@ -100,7 +100,7 @@ network:
 ```
 
 
-![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103129.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20104555.png)
 
 Se aplica la configuración y se comprueba con:
 
@@ -108,4 +108,4 @@ Se aplica la configuración y se comprueba con:
 `ip -br a`
 `hostname`
 
-![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103129.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20110641.png)
