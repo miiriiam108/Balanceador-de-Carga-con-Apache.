@@ -121,7 +121,7 @@ Ahora he arrancado la máquina "MiriamPorroWeb1" he vuelto a seguir los mismos p
 
 `sudo hostnamectl set-hostname Web1`
 
-![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20110641.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20114841.png)
 
 
 en el fichero he puesto: 
@@ -140,7 +140,7 @@ network:
     enp0s9:
       dhcp4: true
 ```
-![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20110641.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20115210.png)
 
 en este caso de nombre le he puesto "Web1" 
 
@@ -148,11 +148,38 @@ en este caso de nombre le he puesto "Web1"
 
 También he comprobado que desde Web1 hace ping a balanceador
 
-![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20110641.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20115732.png)
+
+- Las interfaces `enp0s3` y `enp0s8` tienen las direcciones estáticas **`192.168.10.11/24`** y **`192.168.20.11/24`**.
+- La interfaz `enp0s9` mantiene su dirección por DHCP (`10.0.4.15`).
 
 **ERROR** Al principio no me ha echo ping porque tenía la máquina MiriamPorroBalanceador apagada, una vez encendida si me ha echo ping 
 
+- **Web2:**
 
+Abro la segunda máquina "MiriamPorroWeb2" y realizo los mismos pasos esta vez con el nombre "Web2", y editando el fichero:
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    enp0s3:
+      dhcp4: false
+      addresses:
+        - 192.168.10.12/24
+    enp0s8:
+      dhcp4: false
+      addresses:
+        - 192.168.20.12/24
+    enp0s9:
+      dhcp4: true
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20121127.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20121742.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20121947.png)
+
+Como se puede observar también hace ping a internet y a la máquina del balanceador
 
 
 
