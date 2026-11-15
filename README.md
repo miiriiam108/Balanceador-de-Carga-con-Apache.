@@ -256,22 +256,129 @@ Ejecuto `sudo ss -tlnp | grep 3306` para ver si el servicio escucha
 
 En la captura se observa la base de datos `practica` y el usuario `appuser`, restringido al host `192.168.20.%`, por lo que solo los servidores web pueden conectarse a ella.
 
+### Servidores web (frontales)
+
+#### Script `install_lamp_frontend.sh`
+
+Los servidores web se instalan en las máquinas `MiriamPorroWeb1` y `MiriamPorroWeb2`, que pertenecen a la capa 2. Se utiliza el mismo script en ambas. El script realiza las siguientes tareas:
+
+1. Instala **Apache**, **PHP** y la extensión `php-mysql`. El servidor MySQL no se instala aquí, porque se encuentra en el backend.
+2. Sustituye la página por defecto de Apache por una página PHP de prueba.
+3. Configura en esa página los datos de conexión a la base de datos, leídos del fichero `.env`.
+4. Habilita y reinicia el servicio `apache2`.
+
+La página muestra el **nombre del servidor** que responde y un mensaje almacenado en la tabla `mensajes` de la base de datos. Así se puede comprobar el balanceo de carga y, a la vez, la conexión entre las capas 2 y 3.
+
+```bash
+#!/bin/bash
+# Instalación del frontend: Apache + PHP + conexión a MySQL
+set -e
+
+# Cargar variables
+source "$(dirname "$0")/.env"
+
+# Instalar la pila LAMP (sin MySQL, que está en el backend)
+apt update
+apt install -y apache2 php libapache2-mod-php php-mysql
+
+# Sustituir la página por defecto por nuestra aplicación
+rm -f /var/www/html/index.html
+
+cat > /var/www/html/index.php <<'EOF'
+<?php
+mysqli_report(MYSQLI_REPORT_OFF);
+$servidor = gethostname();
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Práctica balanceador</title></head>
+<body>
+<h1>Práctica: balanceador de carga con Apache</h1>
+<h2>Responde el servidor web: <?php echo $servidor; ?></h2>
+<?php
+$c = new mysqli("__DB_HOST__", "__DB_USER__", "__DB_PASSWORD__", "__DB_NAME__");
+if ($c->connect_error) {
+    echo "<p style='color:red'>Error de conexión con la base de datos.</p>";
+} else {
+    echo "<p style='color:green'>Conexión con la base de datos correcta.</p>";
+    $r = $c->query("SELECT texto FROM mensajes LIMIT 1");
+    if ($r && $fila = $r->fetch_assoc()) {
+        echo "<p>Mensaje de la base de datos: " . htmlspecialchars($fila['texto']) . "</p>";
+    }
+}
+?>
+</body>
+</html>
+EOF
+
+# Rellenar la conexión con las variables del .env
+sed -i "s|__DB_HOST__|$DB_HOST|; s|__DB_USER__|$DB_USER|; s|__DB_PASSWORD__|$DB_PASSWORD|; s|__DB_NAME__|$DB_NAME|" /var/www/html/index.php
+
+systemctl enable apache2
+systemctl restart apache2
+
+echo "Frontend instalado correctamente"
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20123207.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20123557.png)
 
 
+#### Instalación en Web1
+
+En la máquina `MiriamPorroWeb1` se clona el repositorio y se ejecuta el script:
+
+```bash
+git clone https://github.com/miiriiam108/Balanceador-de-Carga-con-Apache..git repo
+cd repo/scripts
+sudo bash install_lamp_frontend.sh
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20124155.png)
 
 
+#### Instalación en Web2
+
+El procedimiento es idéntico en la máquina `MiriamPorroWeb2`:
+
+```bash
+git clone https://github.com/miiriiam108/Balanceador-de-Carga-con-Apache..git repo
+cd repo/scripts
+sudo bash install_lamp_frontend.sh
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20124424.png)
 
 
+#### Comprobación de Web1
+
+Se comprueba que Apache está en ejecución y que la página responde correctamente:
+
+```bash
+systemctl status apache2
+curl http://localhost
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20124557.png)
 
 
+#### Comprobación de Web2
+
+```bash
+systemctl status apache2
+curl http://localhost
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20124745.png)
 
 
+En las 2 capturas se comprueba que:
 
-
-
-
-
-
+- Apache está en estado **`active (running)`**.
+- La página indica el nombre del servidor que responde: **`Web1`** y **`Web2`**, respectivamente.
+- Aparece el mensaje **«Conexión con la base de datos correcta»**, por lo que los dos servidores web alcanzan la base de datos a través de la red `red-bbdd`.
+- Se muestra el mensaje almacenado en la tabla `mensajes`, leído desde MySQL.
 
 
 
