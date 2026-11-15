@@ -441,7 +441,7 @@ for i in 1 2 3 4; do curl -s http://localhost | grep "servidor web"; done
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20132814.png)
 
-- El script finaliza con el mensaje **«Balanceador instalado correctamente»**.
+- El script finaliza con el mensaje **Balanceador instalado correctamente**.
 - Apache está en estado **`active (running)`**.
 - Las cuatro respuestas alternan entre **Web1** y **Web2**, lo que confirma que el balanceador reparte las peticiones de forma secuencial (Round Robin).
 
@@ -451,7 +451,7 @@ Se accede a la dirección del balanceador desde un navegador y se recarga la pá
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20133525.png)
 
-![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20131650.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20133604.png)
 
 
 
