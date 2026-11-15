@@ -381,18 +381,77 @@ En las 2 capturas se comprueba que:
 - Se muestra el mensaje almacenado en la tabla `mensajes`, leído desde MySQL.
 
 
+### Balanceador de carga
+
+#### Script `install_load_balancer.sh`
+
+El balanceador se instala en la máquina `MiriamPorroBalanceador`, que pertenece a la capa 1. En esta práctica se utiliza **Apache HTTP Server configurado como proxy inverso**. Un proxy inverso es un servidor intermedio: el cliente envía las peticiones al balanceador y este las reparte entre los servidores web, devolviendo después sus respuestas al cliente.
+
+El script realiza las siguientes tareas:
+
+1. Instala **Apache**.
+2. Activa los módulos necesarios:
+   - `proxy`: permite configurar Apache como proxy inverso.
+   - `proxy_http`: añade el soporte para el protocolo HTTP.
+   - `proxy_balancer`: permite definir un grupo de servidores entre los que repartir la carga.
+   - `lbmethod_byrequests`: implementa la política de balanceo **Round Robin**.
+3. Define la directiva `ServerName` para evitar el aviso `AH00558` de Apache.
+4. Copia el fichero `conf/load-balancer.conf` a `/etc/apache2/sites-available/` y sustituye las direcciones de los frontales por las definidas en `.env`.
+5. Habilita el nuevo sitio, deshabilita el sitio por defecto, comprueba la sintaxis y reinicia Apache.
+
+#### Fichero `load-balancer.conf`
+
+```apache
+<VirtualHost *:80>
+    <Proxy balancer://mycluster>
+        # Servidor 1
+        BalancerMember http://192.168.10.11
+        # Servidor 2
+        BalancerMember http://192.168.10.12
+        # Política de balanceo: Round Robin
+        ProxySet lbmethod=byrequests
+    </Proxy>
+
+    ProxyPreserveHost On
+    ProxyPass / balancer://mycluster/
+    ProxyPassReverse / balancer://mycluster/
+</VirtualHost>
+```
+
+- `BalancerMember` define cada uno de los servidores web del grupo.
+- `lbmethod=byrequests` reparte las peticiones de forma secuencial: la primera al servidor 1, la siguiente al servidor 2, y así sucesivamente.
+- `ProxyPass` envía al grupo todas las peticiones que llegan a la raíz del sitio.
+- `ProxyPassReverse` reescribe las cabeceras de las respuestas para que el cliente siempre vea la dirección del balanceador.
+- `ProxyPreserveHost On` mantiene la cabecera `Host` original de la petición.
 
 
+#### Instalación y comprobación del balanceo
 
+En la máquina del balanceador se clona el repositorio y se ejecuta el script. Después se comprueba que Apache está en ejecución y se lanzan cuatro peticiones seguidas al balanceador:
 
+```bash
+git clone https://github.com/miiriiam108/Balanceador-de-Carga-con-Apache..git repo
+cd repo/scripts
+sudo bash install_load_balancer.sh
+systemctl status apache2
+for i in 1 2 3 4; do curl -s http://localhost | grep "servidor web"; done
+```
 
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20130653.png)
 
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20132814.png)
 
+- El script finaliza con el mensaje **«Balanceador instalado correctamente»**.
+- Apache está en estado **`active (running)`**.
+- Las cuatro respuestas alternan entre **Web1** y **Web2**, lo que confirma que el balanceador reparte las peticiones de forma secuencial (Round Robin).
 
+#### Comprobación desde el navegador
 
+Se accede a la dirección del balanceador desde un navegador y se recarga la página. Cada petición la atiende un servidor distinto:
 
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20133525.png)
 
-
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20131650.png)
 
 
 
