@@ -213,18 +213,48 @@ En este caso hago ping con internet, con Web1 y con Web 2
 Desde el balanceador le hago ping a la base de datos y como observamos no llega, porque el balanceador no está en red-bbdd
 
 ## Instalación de los servidores
+La instalación de cada capa se automatiza mediante scripts de Bash, almacenados en el directorio `scripts` del repositorio. Las variables de configuración se centralizan en el fichero `.env`, de modo que los scripts no contienen valores fijos.
+
+Para ejecutar un script en una máquina, se clona el repositorio y se lanza con privilegios de administrador:
+
+```bash
+git clone https://github.com/miiriiam108/Balanceador-de-Carga-con-Apache..git repo
+cd repo/scripts
+```
+**ERROR** No tengo captura porque al clonar los comandos se han ido hacia arriba y no me ha dado tiempo de hacer captura
 
 ### Base de datos
 
-#### Instalación MariaDB y comprobación
+#### Script `install_lamp_backend.sh`
+
+El servidor de base de datos se instala en la máquina `MiriamPorroBBDD`, que pertenece a la capa 3. El script realiza las siguientes tareas:
+
+1. Instala el servidor **MySQL**.
+2. Modifica el parámetro `bind-address` para que MySQL escuche únicamente en la dirección de la red interna `red-bbdd` (`192.168.20.10`).
+3. Crea la base de datos `practica`.
+4. Crea el usuario `appuser`, que solo puede conectarse desde la red `192.168.20.0/24`, es decir, desde los servidores web, y le concede permisos únicamente sobre esa base de datos.
 
 
+#### Instalación Mysql y comprobación
 
+Tras ejecutar el script, se comprueba que el servicio está en funcionamiento:
+`systemctl status mysql`
 
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20121053.png)
 
+#### Comprobación de la dirección de escucha
 
+Ejecuto `sudo ss -tlnp | grep 3306` para ver si el servicio escucha
 
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20122728.png)
 
+#### Comprobación de la base de datos y el usuario
+
+`sudo mysql -e "SHOW DATABASES; SELECT user,host FROM mysql.user WHERE user='appuser';"`
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-15%20121537.png)
+
+En la captura se observa la base de datos `practica` y el usuario `appuser`, restringido al host `192.168.20.%`, por lo que solo los servidores web pueden conectarse a ella.
 
 
 
