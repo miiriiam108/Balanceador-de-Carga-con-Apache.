@@ -588,8 +588,87 @@ ip -br a
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20100544.png)
 
 
+## Automatización del despliegue
+
+El script `deploy.sh` reúne en un único punto de entrada la instalación de cada servidor y la configuración de su cortafuegos. Las máquinas de las capas 2 y 3 están en redes privadas y no son accesibles entre sí desde el exterior, por lo que el script se ejecuta **en cada máquina indicando su rol**:
+
+```bash
+sudo bash deploy.sh backend        
+sudo bash deploy.sh frontend       
+sudo bash deploy.sh balanceador    
+```
+
+Para cada rol, el script realiza las siguientes tareas:
+
+1. Carga las variables del fichero `.env`.
+2. Ejecuta el script de instalación correspondiente (`install_lamp_backend.sh`, `install_lamp_frontend.sh` o `install_load_balancer.sh`).
+3. Aplica las reglas del cortafuegos de esa capa: política de entrada en *denegar* y permiso únicamente para el tráfico necesario.
+4. Muestra el estado final del cortafuegos.
+
+Las direcciones y la interfaz de red que usan las reglas del cortafuegos se definen en el fichero `.env`, por lo que el script no contiene valores fijos:
+
+```bash
+IFACE=enp0s3
+BALANCER_IP=192.168.10.10
+WEB1_DB_IP=192.168.20.11
+WEB2_DB_IP=192.168.20.12
+LAN_NETWORK=192.168.100.0/23
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20103514.png)
+
+### Despliegue de la base de datos
+
+En la máquina `MiriamPorroBBDD` se actualiza el repositorio y se ejecuta el script con el rol `backend`:
+
+```bash
+cd ~/repo
+git pull
+cd scripts
+sudo bash deploy.sh backend
+```
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20104038.png)
+
+Al finalizar, el script muestra el mensaje de despliegue completado y las reglas del cortafuegos: solo se permiten MySQL (3306) y SSH (22) desde las direcciones de Web1 y Web2.
+
+### Despliegue de los servidores web
+
+El mismo comando, con el rol `frontend`, se ejecuta en Web1 y en Web2:
+
+```bash
+sudo bash deploy.sh frontend
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20104208.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20104305.png)
 
 
+n ambas máquinas, el cortafuegos queda configurado para permitir HTTP (80) y SSH (22) únicamente desde el balanceador (`192.168.10.10`).
+
+Tras el despliegue, se comprueba que cada servidor responde y que se conecta a la base de datos:
+
+```bash
+curl -m 10 http://localhost
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20104506.png)
 
 
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20104420.png)
+
+
+En ambas capturas la página muestra el nombre del servidor que responde (**Web1** y **Web2**), el mensaje **«Conexión con la base de datos correcta»** y el mensaje almacenado en MySQL.
+
+### Despliegue del balanceador
+
+En la máquina `MiriamPorroBalanceador` se ejecuta el rol `balanceador`:
+
+```bash
+sudo bash deploy.sh balanceador
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20104620.png)
+
+El cortafuegos del balanceador permite HTTP (80) y HTTPS (443) desde cualquier origen y SSH (22) solo desde la red local (`192.168.100.0/23`). Las reglas marcadas como `(v6)` son las equivalentes para IPv6, que `ufw` crea automáticamente.
 
