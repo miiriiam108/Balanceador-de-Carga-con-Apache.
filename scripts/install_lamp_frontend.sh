@@ -24,8 +24,9 @@ $servidor = gethostname();
 <h1>Práctica: balanceador de carga con Apache</h1>
 <h2>Responde el servidor web: <?php echo $servidor; ?></h2>
 <?php
-$c = new mysqli("__DB_HOST__", "__DB_USER__", "__DB_PASSWORD__", "__DB_NAME__");
-if ($c->connect_error) {
+$c = mysqli_init();
+$c->options(MYSQLI_OPT_CONNECT_TIMEOUT, 3);
+@$c->real_connect("__DB_HOST__", "__DB_USER__", "__DB_PASSWORD__", "__DB_NAME__");if ($c->connect_errno) {
     echo "<p style='color:red'>Error de conexión con la base de datos.</p>";
 } else {
     echo "<p style='color:green'>Conexión con la base de datos correcta.</p>";
