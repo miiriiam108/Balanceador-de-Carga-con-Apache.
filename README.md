@@ -455,17 +455,58 @@ Se accede a la dirección del balanceador desde un navegador y se recarga la pá
 
 
 
+### Servidores web (Web1 y Web2)
+
+Los servidores web solo deben recibir tráfico del balanceador. Se aplican las mismas reglas en ambos, a través de la interfaz `enp0s3`, que corresponde a la red interna `red-web`:
+
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow in on enp0s3 from 192.168.10.10 to any port 80 proto tcp
+sudo ufw allow in on enp0s3 from 192.168.10.10 to any port 22 proto tcp
+sudo ufw enable
+sudo ufw status verbose
+```
 
 
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20094707.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20094728.png)
+
+Desde el balanceador se comprueba que el puerto 80 de Web1 responde y que un puerto no autorizado (8080) se bloquea:
+
+```bash
+nc -zv -w 3 192.168.10.11 80
+nc -zv -w 3 192.168.10.11 8080
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20094851.png)
+
+También se comprueba que un servidor web no puede acceder al otro. Desde Web2 se intenta conectar con Web1:
+
+```bash
+curl -m 3 http://192.168.10.11
+```
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20094936.png)
 
 
+La conexión falla por tiempo de espera, porque solo el balanceador tiene permitido el acceso. Así se limita el movimiento lateral entre servidores en caso de que uno de ellos se viera comprometido.
 
+### Balanceador
 
+El balanceador es la única máquina expuesta a la red pública. Se permite el tráfico web desde cualquier origen y el acceso SSH solo desde la red local:
 
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow in on enp0s3 to any port 80 proto tcp
+sudo ufw allow in on enp0s3 to any port 443 proto tcp
+sudo ufw allow in on enp0s3 from 192.168.100.0/23 to any port 22 proto tcp
+sudo ufw enable
+sudo ufw status verbose
+```
 
-
-
-
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20095026.png)
 
 
 
