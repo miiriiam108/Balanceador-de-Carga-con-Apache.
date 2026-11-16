@@ -508,12 +508,84 @@ sudo ufw status verbose
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20095026.png)
 
+#### IP fija del balanceador
+
+En AWS, la máquina de la capa 1 se hace pública asignándole una **IP elástica**, una dirección que no cambia aunque la instancia se detenga o se reinicie. En este escenario con VirtualBox, el balanceador obtiene su dirección de la red local mediante el adaptador puente. Esa dirección la reparte el router por DHCP y puede cambiar cada vez que se reinicia la máquina o se cambia de red, por lo que se sustituye por una **dirección IP estática**.
+
+Antes de elegir la dirección, se comprueba la configuración actual de la red y que la dirección elegida no está en uso por ningún otro dispositivo:
+
+```bash
+ip -br a
+ip route | grep default
+ping -c 3 192.168.100.250
+```
+
+El `ping` responde con `Destination Host Unreachable`, por lo que la dirección `192.168.100.250` está libre. La puerta de enlace de la red es `192.168.100.1`.
+
+Se edita el fichero de Netplan para que la interfaz `enp0s3` (adaptador puente) use una dirección fija, con su puerta de enlace y sus servidores DNS:
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    enp0s3:
+      dhcp4: false
+      addresses:
+        - 192.168.100.250/23
+      routes:
+        - to: default
+          via: 192.168.100.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1
+    enp0s8:
+      dhcp4: false
+      addresses:
+        - 192.168.10.10/24
+```
+
+Para evitar quedarse sin conexión por un error de sintaxis, la configuración se aplica con `netplan try`, que revierte los cambios automáticamente si no se confirman en 120 segundos:
+
+```bash
+sudo netplan try
+```
+
+Después se comprueba el resultado:
+
+```bash
+ip -br a
+ip route | grep default
+ping -c 3 8.8.8.8
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20095505.png)
+
+ANTES
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20095618.png)
+
+DESPUÉS
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20095842.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20095959.png)
 
 
+En la captura se comprueba que:
 
+- La configuración se ha aceptado (`Configuration accepted`).
+- La interfaz `enp0s3` tiene la dirección estática **`192.168.100.250/23`**.
+- La ruta por defecto pasa a ser estática (`proto static`) y no dinámica (`proto dhcp`), con la puerta de enlace `192.168.100.1`.
+- El `ping` a `8.8.8.8` responde sin pérdida de paquetes, por lo que la máquina conserva la salida a Internet.
 
+Por último, se comprueba que la dirección se mantiene tras reiniciar la máquina:
 
-
+```bash
+sudo reboot
+ip -br a
+```
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20100544.png)
 
 
 
