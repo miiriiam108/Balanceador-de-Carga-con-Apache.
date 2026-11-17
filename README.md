@@ -117,9 +117,7 @@ Se aplica la configuración y se comprueba con:
 
 2. **Web1:**
 
-Ahora he arrancado la máquina "MiriamPorroWeb1" he vuelto a seguir los mismos pasos que en la máquina anterior. en este caso de nombre le he puesto "Web1" 
-
-`sudo hostnamectl set-hostname Web1`
+Ahora he arrancado la máquina "MiriamPorroWeb1" he vuelto a seguir los mismos pasos que en la máquina anterior.
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20114841.png)
 
