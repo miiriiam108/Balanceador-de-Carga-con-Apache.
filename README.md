@@ -672,3 +672,121 @@ sudo bash deploy.sh balanceador
 
 El cortafuegos del balanceador permite HTTP (80) y HTTPS (443) desde cualquier origen y SSH (22) solo desde la red local (`192.168.100.0/23`). Las reglas marcadas como `(v6)` son las equivalentes para IPv6, que `ufw` crea automáticamente.
 
+### Aislamiento de las capas privadas
+
+Durante la instalación, Web1, Web2 y BBDD necesitaban salida a Internet para descargar paquetes, por lo que tenían un adaptador de red en modo **NAT**. Una vez instalados y configurados todos los servicios, este adaptador ya no es necesario, y mantenerlo supondría una vía de entrada y de salida innecesaria hacia las capas privadas.
+
+Para evitar que el sistema espere a una interfaz inexistente en cada arranque, la interfaz NAT se marca como opcional en Netplan:
+
+```yaml
+    enp0s9:
+      dhcp4: true
+      optional: true
+```
+
+```yaml
+    enp0s8:
+      dhcp4: true
+      optional: true
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-17%20125624.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-17%20125718.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-17%20125819.png)
+
+Después se apagan las máquinas y se desactiva el adaptador NAT desde VirtualBox:
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-17%20130058.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-17%20130115.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-17%20130148.png)
+
+Al arrancar de nuevo, se comprueba que las máquinas privadas ya no tienen conexión a Internet:
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-17%20130622.png)
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-17%20130627.png)
+
+
+El `ping` falla en las máquinas, lo que confirma que las capas 2 y 3 quedan aisladas de Internet. A pesar de ello, la aplicación sigue funcionando, ya que toda la comunicación necesaria se realiza a través de las redes internas `red-web` y `red-bbdd`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
