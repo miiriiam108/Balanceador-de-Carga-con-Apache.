@@ -500,7 +500,25 @@ sudo ufw enable
 sudo ufw status verbose
 ```
 
-![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20095026.png)
+### BBDD
+
+La base de datos es la capa más protegida. Se bloquea todo el tráfico de entrada y solo se permiten MySQL (3306) y SSH (22) desde las direcciones de Web1 y Web2:
+
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow in on enp0s3 from 192.168.20.11 to any port 3306 proto tcp
+sudo ufw allow in on enp0s3 from 192.168.20.12 to any port 3306 proto tcp
+sudo ufw allow in on enp0s3 from 192.168.20.11 to any port 22 proto tcp
+sudo ufw allow in on enp0s3 from 192.168.20.12 to any port 22 proto tcp
+sudo ufw enable
+sudo ufw status verbose
+```
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20092136.png)
+
+
+En la captura se observa que el cortafuegos está activo, que la política de entrada es **denegar** y que solo se permiten MySQL y SSH desde `192.168.20.11` y `192.168.20.12`. Cualquier otro origen o puerto es rechazado.
 
 #### IP fija del balanceador
 
