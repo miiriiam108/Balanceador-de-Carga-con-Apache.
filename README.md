@@ -1,20 +1,16 @@
 # Balanceador-de-Carga-con-Apache.
 
 ## ÍNDICE
+
 1. Introducción
 2. Arquitectura de la infraestructura
-3. Creación del repositorio GitHub
-4. Configuración de AWS
-5. Creación de las instancias EC2
-6. Configuración del balanceador Apache
-7. Configuración de los servidores web
-8. Configuración del servidor de base de datos
-9. Configuración de HTTPS con CertBot
-10. Configuración de ACL y Security Groups
-11. Pruebas de funcionamiento
-12. Conclusiones
+3. Configuración de red
+4. Instalación de los servidores
+5. Automatización del despliegue
+7. Pruebas de funcionamiento
+8. Screencast
 
-## 1. INTRODUCCIÓN
+## 1. introducción
 El objetivo de esta práctica es desplegar una arquitectura web de tres capas en AWS utilizando un balanceador de carga basado en Apache, dos servidores web y un servidor de base de datos.
 
 La infraestructura está formada por:
@@ -24,7 +20,7 @@ La infraestructura está formada por:
 - Un servidor de base de datos.
 - Redes configuradas con las medidas de seguridad necesarias.
 
-## Arquitectura de la infraestructura
+## 2. Arquitectura de la infraestructura
 
 Tengo 4 máquinas virtuales
 
@@ -67,7 +63,7 @@ En las que a cada una le he puesto sus tarjetas de red correspondientes
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-13%20103129.png)
 
-## Configuración de red
+## 3. Configuración de red
 
 1. **Balanceador:**
 
@@ -210,7 +206,8 @@ En este caso hago ping con internet, con Web1 y con Web 2
 
 Desde el balanceador le hago ping a la base de datos y como observamos no llega, porque el balanceador no está en red-bbdd
 
-## Instalación de los servidores
+## 4. Instalación de los servidores
+
 La instalación de cada capa se automatiza mediante scripts de Bash, almacenados en el directorio `scripts` del repositorio. Las variables de configuración se centralizan en el fichero `.env`, de modo que los scripts no contienen valores fijos.
 
 Para ejecutar un script en una máquina, se clona el repositorio y se lanza con privilegios de administrador:
@@ -586,7 +583,7 @@ ip -br a
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20100544.png)
 
 
-## Automatización del despliegue
+## 5. Automatización del despliegue
 
 El script `deploy.sh` reúne en un único punto de entrada la instalación de cada servidor y la configuración de su cortafuegos. Las máquinas de las capas 2 y 3 están en redes privadas y no son accesibles entre sí desde el exterior, por lo que el script se ejecuta **en cada máquina indicando su rol**:
 
@@ -627,6 +624,11 @@ sudo bash deploy.sh backend
 ```
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20104038.png)
 
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20104305.png)
+
+
+n ambas máquinas, el cortafuegos queda configurado para permitir HTTP (80) y SSH (22) únicamente desde el balanceador (`192.168.10.10`).
 Al finalizar, el script muestra el mensaje de despliegue completado y las reglas del cortafuegos: solo se permiten MySQL (3306) y SSH (22) desde las direcciones de Web1 y Web2.
 
 ### Despliegue de los servidores web
@@ -638,11 +640,6 @@ sudo bash deploy.sh frontend
 ```
 
 ![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20104208.png)
-
-![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20104305.png)
-
-
-n ambas máquinas, el cortafuegos queda configurado para permitir HTTP (80) y SSH (22) únicamente desde el balanceador (`192.168.10.10`).
 
 Tras el despliegue, se comprueba que cada servidor responde y que se conecta a la base de datos:
 
@@ -713,7 +710,7 @@ El `ping` falla en las máquinas, lo que confirma que las capas 2 y 3 quedan ais
 
 
 
-
+## 8. Screencast
 
 
 
