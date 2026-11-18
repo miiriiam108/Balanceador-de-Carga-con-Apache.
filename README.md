@@ -515,7 +515,7 @@ sudo ufw enable
 sudo ufw status verbose
 ```
 
-![Captura 1](img/Captura%20de%20pantalla%202026-11-16%20092136.png)
+![Captura 1](img/Captura%20de%20pantalla%202026-11-18%20092136.png)
 
 
 En la captura se observa que el cortafuegos está activo, que la política de entrada es **denegar** y que solo se permiten MySQL y SSH desde `192.168.20.11` y `192.168.20.12`. Cualquier otro origen o puerto es rechazado.
