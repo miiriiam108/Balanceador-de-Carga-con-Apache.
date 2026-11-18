@@ -7,8 +7,7 @@
 3. Configuración de red
 4. Instalación de los servidores
 5. Automatización del despliegue
-7. Pruebas de funcionamiento
-8. Screencast
+6. Screencast
 
 ## 1. introducción
 El objetivo de esta práctica es desplegar una arquitectura web de tres capas en AWS utilizando un balanceador de carga basado en Apache, dos servidores web y un servidor de base de datos.
@@ -710,7 +709,7 @@ El `ping` falla en las máquinas, lo que confirma que las capas 2 y 3 quedan ais
 
 
 
-## 8. Screencast
+## 6. Screencast
 
 
 
