@@ -8,6 +8,7 @@
 4. Instalación de los servidores
 5. Automatización del despliegue
 6. Screencast
+7. Conclusiones
 
 ## 1. introducción
 El objetivo de esta práctica es desplegar una arquitectura web de tres capas en AWS utilizando un balanceador de carga basado en Apache, dos servidores web y un servidor de base de datos.
@@ -520,6 +521,12 @@ sudo ufw status verbose
 
 En la captura se observa que el cortafuegos está activo, que la política de entrada es **denegar** y que solo se permiten MySQL y SSH desde `192.168.20.11` y `192.168.20.12`. Cualquier otro origen o puerto es rechazado.
 
+Desde Web1 se comprueba que el puerto 3306 responde y que un puerto no autorizado (8080) se bloquea:
+
+![Captura 1](img/Captura%20de%20pantalla%202026-11-18%20092617.png)
+
+El primer puerto responde (`succeeded`) y el segundo agota el tiempo de espera (`timed out`), lo que confirma que el cortafuegos solo deja pasar el tráfico necesario.
+
 #### IP fija del balanceador
 
 En AWS, la máquina de la capa 1 se hace pública asignándole una **IP elástica**, una dirección que no cambia aunque la instancia se detenga o se reinicie. En este escenario con VirtualBox, el balanceador obtiene su dirección de la red local mediante el adaptador puente. Esa dirección la reparte el router por DHCP y puede cambiar cada vez que se reinicia la máquina o se cambia de red, por lo que se sustituye por una **dirección IP estática**.
@@ -729,6 +736,10 @@ El `ping` falla en las máquinas, lo que confirma que las capas 2 y 3 quedan ais
 
 ## 6. Screencast
 
+
+## 7. Conclusiones
+
+Se ha desplegado una arquitectura de tres capas en la que solo el balanceador es accesible desde la red local. Los servidores web solo reciben tráfico del balanceador y la base de datos solo acepta conexiones de los servidores web. Las capas privadas no tienen acceso a Internet y la aplicación sigue funcionando, ya que toda la comunicación se realiza por las redes internas. Los scripts de Bash y el fichero `.env` permiten reproducir el despliegue de forma automática.
 
 
 
