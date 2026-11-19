@@ -736,6 +736,7 @@ El `ping` falla en las máquinas, lo que confirma que las capas 2 y 3 quedan ais
 
 ## 6. Screencast
 
+El funcionamiento de la aplicación desplegada se muestra en el siguiente vídeo: [screencast.mp4](screencast/screencast.mp4)
 
 ## 7. Conclusiones
 
